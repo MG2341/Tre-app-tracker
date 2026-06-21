@@ -1,3 +1,5 @@
+package core;
+
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -11,7 +13,6 @@ public class SessionLog {
     private String notes;
 
     // CONSTRUCTOR 1: For the "Manual Input" option
-    // Notice it doesn't even ask for start/end times.
     public SessionLog(LocalDate date, int durationMinutes, ArrayList<SessionAttribute> attributes, String notes) {
         this.date = date;
         this.durationMinutes = durationMinutes;
@@ -22,7 +23,6 @@ public class SessionLog {
     }
 
     // CONSTRUCTOR 2: For the "Timer" option
-    // This one takes the exact start and end times.
     public SessionLog(LocalDate date, LocalTime startTime, LocalTime endTime, int durationMinutes, ArrayList<SessionAttribute> attributes, String notes) {
         this.date = date;
         this.startTime = startTime;
@@ -32,7 +32,6 @@ public class SessionLog {
         this.notes = notes;
     }
 
-    // ... your getters and setters down here ...
     public LocalDate getDate() {
         return date;
     }
@@ -44,6 +43,12 @@ public class SessionLog {
     }
     public String getNotes() {
         return notes;
+    }
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+    public LocalTime getEndTime() {
+        return endTime;
     }
     
 }
