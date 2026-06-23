@@ -6,7 +6,9 @@ import java.util.List;
 import core.SessionLog;
 import core.application.LogRepository;
 import core.application.SessionService;
+import desktop.infrastructure.CsvLogRepositoryImpl;
 import desktop.ui.TreAppGui;
+
 
 /**
  * Mock implementation of LogRepository for testing
@@ -36,8 +38,10 @@ class InMemoryLogRepository implements LogRepository {
  */
 public class UseCaseTest {
     public static void main(String[] args) {
+        String path = "C:\\Users\\mgold\\OneDrive\\Documents\\code_Projects\\Tre-app-tracker";
+
         // Create in-memory repository
-        LogRepository repository = new InMemoryLogRepository();
+        LogRepository repository = new CsvLogRepositoryImpl(path + "\\logs.csv");
         
         // Create session service
         SessionService sessionService = new SessionService(repository);

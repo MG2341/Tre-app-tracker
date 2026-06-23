@@ -23,13 +23,16 @@ public class TreAppGui extends JFrame {
         // Frame setup
         setTitle("Tre App - Session Logger");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        // Set size and center the window
         setSize(400, 350);
         setLocationRelativeTo(null);
         
         // Create main panel with GridLayout
-        JPanel mainPanel = new JPanel(new GridLayout(5, 2, 10, 10));
+        // Use GridLayout with 5 rows and 2 columns, with gaps
+        JPanel mainPanel = new JPanel(new GridLayout(5, 2, 50, 10));
+        // Add padding around the panel
         mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-        
+         
         // Duration label and field
         mainPanel.add(new JLabel("Duration (minutes):"));
         durationField = new JTextField();
