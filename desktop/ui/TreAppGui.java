@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 import core.SessionLog;
 import core.SessionAttribute;
@@ -11,59 +13,83 @@ import core.application.SessionService;
 
 public class TreAppGui extends JFrame {
     private SessionService sessionService;
-    
+
     private JTextField durationField;
     private JTextField moodField;
     private JTextArea notesArea;
     private JButton saveSessionButton;
+    private Set<SessionAttribute> selectedAttributes;
 
     public TreAppGui(SessionService sessionService) {
         this.sessionService = sessionService;
-        
+        this.selectedAttributes = new HashSet<>();
+
         // Frame setup
         setTitle("Tre App - Session Logger");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        // Set size and center the window
-        setSize(400, 350);
+        setSize(500, 600);
         setLocationRelativeTo(null);
-        
-        // Create main panel with GridLayout
-        // Use GridLayout with 5 rows and 2 columns, with gaps
-        JPanel mainPanel = new JPanel(new GridLayout(5, 2, 50, 10));
-        // Add padding around the panel
+
+        // Create main panel with BoxLayout for vertical stacking
+        JPanel mainPanel = new JPanel();
+        mainPanel.setLayout(new BoxLayout(mainPanel, BoxLayout.Y_AXIS));
         mainPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-         
-        // Duration label and field
-        mainPanel.add(new JLabel("Duration (minutes):"));
-        durationField = new JTextField();
-        mainPanel.add(durationField);
-        
-        // Mood label and field
-        mainPanel.add(new JLabel("Mood (1-10):"));
-        moodField = new JTextField();
-        mainPanel.add(moodField);
-        
-        // Notes label and area
+
+        // Duration section
+        JPanel durationPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        durationPanel.add(new JLabel("Duration (minutes):"));
+        durationField = new JTextField(10);
+        durationPanel.add(durationField);
+        mainPanel.add(durationPanel);
+
+        // Mood section
+        JPanel moodPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        moodPanel.add(new JLabel("Mood (1-10):"));
+        moodField = new JTextField(10);
+        moodPanel.add(moodField);
+        mainPanel.add(moodPanel);
+
+        // Attributes section
+        mainPanel.add(new JLabel("Attributes:"));
+        JPanel attributesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
+        for (SessionAttribute attr : SessionAttribute.values()) {
+            JButton attrButton = new JButton(attr.getName());
+            attrButton.addActionListener(e -> toggleAttribute(attr, attrButton));
+            attributesPanel.add(attrButton);
+        }
+        mainPanel.add(attributesPanel);
+
+        // Notes section
         mainPanel.add(new JLabel("Notes:"));
         notesArea = new JTextArea(4, 20);
         notesArea.setLineWrap(true);
         notesArea.setWrapStyleWord(true);
         JScrollPane scrollPane = new JScrollPane(notesArea);
         mainPanel.add(scrollPane);
-        
+
         // Save button
-        mainPanel.add(new JLabel()); // Empty space
+        JPanel buttonPanel = new JPanel();
         saveSessionButton = new JButton("Save Session");
-        mainPanel.add(saveSessionButton);
-        
-        // Add action listener to Save button
         saveSessionButton.addActionListener(e -> handleSaveSession());
-        
+        buttonPanel.add(saveSessionButton);
+        mainPanel.add(buttonPanel);
+
         // Add main panel to frame
         add(mainPanel);
         setVisible(true);
     }
-    
+
+    private void toggleAttribute(SessionAttribute attr, JButton button) {
+        if (selectedAttributes.contains(attr)) {
+            selectedAttributes.remove(attr);
+            button.setBackground(null);
+            button.setOpaque(false);
+        } else {
+            selectedAttributes.add(attr);
+            button.setBackground(new Color(173, 216, 230));
+            button.setOpaque(true);
+        }
+    }
     private void handleSaveSession() {
         try {
             // Parse duration
@@ -73,36 +99,26 @@ public class TreAppGui extends JFrame {
                 return;
             }
             int duration = Integer.parseInt(durationText);
-            
-            // Parse mood
-            String moodText = moodField.getText().trim();
-            if (moodText.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please enter a mood value.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            int mood = Integer.parseInt(moodText);
-            
+
             // Get notes
             String notes = notesArea.getText();
-            
-            // Create SessionAttribute for Mood
-            ArrayList<SessionAttribute> attributes = new ArrayList<>();
-            attributes.add(new SessionAttribute("Mood", "Mood", mood, false));
-            
-            // Create SessionLog
+
+            // Create SessionLog with selected attributes
+            ArrayList<SessionAttribute> attributes = new ArrayList<>(selectedAttributes);
             SessionLog log = new SessionLog(LocalDate.now(), duration, attributes, notes);
-            
+
             // Execute use case
             sessionService.saveSession(log);
-            
+
             // Show success message
             JOptionPane.showMessageDialog(this, "Session saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-            
+
             // Clear fields
             durationField.setText("");
             moodField.setText("");
             notesArea.setText("");
-            
+            selectedAttributes.clear();
+
         } catch (NumberFormatException ex) {
             JOptionPane.showMessageDialog(this, "Please enter valid numbers for duration and mood.", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException ex) {

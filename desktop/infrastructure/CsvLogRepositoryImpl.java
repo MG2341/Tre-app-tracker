@@ -230,7 +230,7 @@ public class CsvLogRepositoryImpl implements LogRepository {
             if (parts.length == 2) {
                 String name = parts[0].trim();
                 int score = Integer.parseInt(parts[1].trim());
-                attributes.add(new SessionAttribute(name, score));
+                attributes.add(SessionAttribute.valueOf(name.toUpperCase().replace(" ", "_"))); // Assuming the enum names match the attribute names
             }
         }
         return attributes;
