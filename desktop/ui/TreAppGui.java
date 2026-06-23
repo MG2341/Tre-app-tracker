@@ -87,7 +87,7 @@ public class TreAppGui extends JFrame {
             
             // Create SessionAttribute for Mood
             ArrayList<SessionAttribute> attributes = new ArrayList<>();
-            attributes.add(new SessionAttribute("Mood", mood));
+            attributes.add(new SessionAttribute("Mood", "Mood", mood, false));
             
             // Create SessionLog
             SessionLog log = new SessionLog(LocalDate.now(), duration, attributes, notes);
