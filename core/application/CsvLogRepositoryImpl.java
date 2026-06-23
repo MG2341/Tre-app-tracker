@@ -42,6 +42,28 @@ public class CsvLogRepositoryImpl implements LogRepository {
     }
 
     @Override
+    public boolean deleteLogById(String id) {
+        List<SessionLog> logs = getAllLogs();
+        boolean removed = logs.removeIf(log -> log.getId().equals(id));
+        if (removed) {
+            try (FileWriter writer = new FileWriter(filePath);
+                 BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
+                bufferedWriter.write(CSV_HEADER);
+                bufferedWriter.newLine();
+                for (SessionLog log : logs) {
+                    String csvLine = logToCsvLine(log);
+                    bufferedWriter.write(csvLine);
+                    bufferedWriter.newLine();
+                }
+                bufferedWriter.flush();
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to update CSV after deletion: " + filePath, e);
+            }
+        }
+        return removed;
+    }
+
+    @Override
     public void saveLog(SessionLog log) {
         try (FileWriter writer = new FileWriter(filePath, true);
              BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
