@@ -1,7 +1,21 @@
+leptop:
 cd "C:\Users\mgold\OneDrive\Documents\code_Projects\Tre-app-tracker"
 
+home:
+cd "C:\Users\Matan\Documents\Code\Tre-app-tracker"
+
+everywhere:
 dir /s /b *.java > sources.txt
 
 javac @sources.txt
 
-java desktop.test.UseCaseTest.java
+leptop:
+java desktop.test.UseCaseTest "C:\\Users\\mgold\\OneDrive\\Documents\\code_Projects\\Tre-app-tracker"
+
+home:
+java desktop.test.UseCaseTest "C:\\Users\\Matan\\Documents\\Code\\Tre-app-tracker"
+
+
+
+unhide .class files by deleting **/*.class in files:exclude by clicking ctarl _ ,. 
+Then delete irelevant .class files
