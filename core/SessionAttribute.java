@@ -13,6 +13,10 @@ public class SessionAttribute {
         this.id = UUID.randomUUID(); // Generate a unique ID for each attribute
     }
 
+    public SessionAttribute(AttributeType attributeType) {
+        this(attributeType, 0); // Default value is 0
+    }
+
     public AttributeType getAttributeType() {
         return attributeType;
     }

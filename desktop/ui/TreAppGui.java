@@ -4,18 +4,18 @@ import javax.swing.*;
 import java.awt.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
-import core.SessionLog;
 import core.AttributeType;
-import core.application.SessionService;
 import core.SessionAttribute;
+import core.SessionLog;
+import core.application.SessionService;
 
 public class TreAppGui extends JFrame {
-    private static final int DEFAULT_VALUE = 0; // Assuming a default value for attributes
-    private SessionService sessionService;
-    private Set<SessionAttribute> selectedAttributes;
+    private final SessionService sessionService;
+    private final Map<AttributeType, SessionAttribute> selectedAttributes;
+    private final Map<AttributeType, JButton> attributeButtons;
 
     private JTextField durationField;
     private JTextArea notesArea;
@@ -23,12 +23,12 @@ public class TreAppGui extends JFrame {
 
     public TreAppGui(SessionService sessionService) {
         this.sessionService = sessionService;
-        this.selectedAttributes = new HashSet<>();
+        this.selectedAttributes = new LinkedHashMap<>();
+        this.attributeButtons = new LinkedHashMap<>();
 
         setupFrame();
-        
-        JPanel mainPanel = createMainPanel();
-        add(mainPanel);
+
+        add(createMainPanel());
         setVisible(true);
     }
 
@@ -64,27 +64,33 @@ public class TreAppGui extends JFrame {
         JPanel containerPanel = new JPanel();
         containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
         containerPanel.add(new JLabel("Attributes:"));
-        
+
         JPanel attributesPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 10, 5));
-        for (AttributeType attr : AttributeType.values()) {
-            JButton attrButton = new JButton(attr.getName());
-            attrButton.addActionListener(e -> toggleAttribute(attr, attrButton));
-            attributesPanel.add(attrButton);
+        for (AttributeType attributeType : AttributeType.values()) {
+            JButton attributeButton = createAttributeButton(attributeType);
+            attributeButtons.put(attributeType, attributeButton);
+            attributesPanel.add(attributeButton);
         }
+
         containerPanel.add(attributesPanel);
         return containerPanel;
+    }
+
+    private JButton createAttributeButton(AttributeType attributeType) {
+        JButton button = new JButton(attributeType.getName());
+        button.addActionListener(e -> toggleAttribute(attributeType));
+        return button;
     }
 
     private JPanel createNotesPanel() {
         JPanel containerPanel = new JPanel();
         containerPanel.setLayout(new BoxLayout(containerPanel, BoxLayout.Y_AXIS));
         containerPanel.add(new JLabel("Notes:"));
-        
+
         notesArea = new JTextArea(4, 20);
         notesArea.setLineWrap(true);
         notesArea.setWrapStyleWord(true);
-        JScrollPane scrollPane = new JScrollPane(notesArea);
-        containerPanel.add(scrollPane);
+        containerPanel.add(new JScrollPane(notesArea));
         return containerPanel;
     }
 
@@ -96,52 +102,82 @@ public class TreAppGui extends JFrame {
         return buttonPanel;
     }
 
-    private void toggleAttribute(AttributeType attr, JButton button) {
-        SessionAttribute sessionAttr = new SessionAttribute(attr, DEFAULT_VALUE); 
-        if (selectedAttributes.contains(sessionAttr)) {
-            selectedAttributes.remove(sessionAttr);
-            button.setBackground(null);
-            button.setOpaque(false);
+    private void toggleAttribute(AttributeType attributeType) {
+        JButton button = attributeButtons.get(attributeType);
+        if (button == null) {
+            return;
+        }
+
+        if (selectedAttributes.containsKey(attributeType)) {
+            removeAttribute(attributeType, button);
         } else {
-            selectedAttributes.add(sessionAttr);
-            button.setBackground(new Color(173, 216, 230));
-            button.setOpaque(true);
+            addAttribute(attributeType, button);
         }
     }
+
+    private void addAttribute(AttributeType attributeType, JButton button) {
+        selectedAttributes.put(attributeType, new SessionAttribute(attributeType));
+        updateSelectedButtonStyle(button);
+    }
+
+    private void removeAttribute(AttributeType attributeType, JButton button) {
+        selectedAttributes.remove(attributeType);
+        updateDeselectedButtonStyle(button);
+    }
+
+    private void updateSelectedButtonStyle(JButton button) {
+        button.setBackground(new Color(173, 216, 230));
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+    }
+
+    private void updateDeselectedButtonStyle(JButton button) {
+        button.setBackground(UIManager.getColor("Button.background"));
+        button.setOpaque(true);
+        button.setContentAreaFilled(true);
+    }
+
     private void handleSaveSession() {
         try {
-            // Parse duration
-            String durationText = durationField.getText().trim();
-            if (durationText.isEmpty()) {
-                JOptionPane.showMessageDialog(this, "Please enter a duration.", "Error", JOptionPane.ERROR_MESSAGE);
-                return;
-            }
-            int duration = Integer.parseInt(durationText);
-
-            // Get notes
-            String notes = notesArea.getText();
-
-            // Create SessionLog with selected attributes
-            ArrayList<SessionAttribute> attributes = new ArrayList<>(selectedAttributes);
-            SessionLog log = new SessionLog(LocalDate.now(), duration, attributes, notes);
-
-            // Execute use case
+            SessionLog log = createSessionLog();
             sessionService.saveSession(log);
-
-            // Show success message
             JOptionPane.showMessageDialog(this, "Session saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
-
-            // Clear fields
-            durationField.setText("");
-            notesArea.setText("");
-            selectedAttributes.clear();
+            clearForm();
 
         } catch (NumberFormatException ex) {
-            JOptionPane.showMessageDialog(this, "Please enter valid numbers for duration.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(this, "Please enter a valid duration.", "Error", JOptionPane.ERROR_MESSAGE);
         } catch (IllegalArgumentException ex) {
             JOptionPane.showMessageDialog(this, "Invalid input: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(this, "Error saving session: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private SessionLog createSessionLog() {
+        int duration = parseDuration();
+        String notes = notesArea.getText();
+        ArrayList<SessionAttribute> attributes = new ArrayList<>(selectedAttributes.values());
+        return new SessionLog(LocalDate.now(), duration, attributes, notes);
+    }
+
+    private int parseDuration() {
+        String durationText = durationField.getText().trim();
+        if (durationText.isEmpty()) {
+            throw new IllegalArgumentException("Please enter a duration.");
+        }
+        return Integer.parseInt(durationText);
+    }
+
+    private void clearForm() {
+        durationField.setText("");
+        notesArea.setText("");
+        selectedAttributes.clear();
+        resetAttributeButtons();
+    }
+
+    private void resetAttributeButtons() {
+        for (JButton button : attributeButtons.values()) {
+            updateDeselectedButtonStyle(button);
         }
     }
 }
