@@ -3,6 +3,8 @@ package desktop.infrastructure;
 import core.SessionLog;
 import core.application.LogRepository;
 import core.SessionAttribute;
+import core.AttributeType;
+
 
 import java.io.*;
 import java.time.LocalDate;
@@ -207,7 +209,7 @@ public class CsvLogRepositoryImpl implements LogRepository {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < attributes.size(); i++) {
             SessionAttribute attr = attributes.get(i);
-            sb.append(attr.getName()).append(ATTRIBUTE_PAIR_DELIMITER).append(attr.getImpactScore());
+            sb.append(attr.getAttributeType().getName()).append(ATTRIBUTE_PAIR_DELIMITER).append(attr.getValue());
             if (i < attributes.size() - 1) {
                 sb.append(ATTRIBUTE_DELIMITER);
             }
@@ -230,7 +232,7 @@ public class CsvLogRepositoryImpl implements LogRepository {
             if (parts.length == 2) {
                 String name = parts[0].trim();
                 int score = Integer.parseInt(parts[1].trim());
-                attributes.add(SessionAttribute.valueOf(name.toUpperCase().replace(" ", "_"))); // Assuming the enum names match the attribute names
+                attributes.add(new SessionAttribute(AttributeType.valueOf(name.toUpperCase().replace(" ", "_")), String.valueOf(score))); // Assuming the enum names match the attribute names
             }
         }
         return attributes;
