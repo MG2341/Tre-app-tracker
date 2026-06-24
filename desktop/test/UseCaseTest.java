@@ -15,7 +15,7 @@ import desktop.ui.TreAppGui;
  */
 public class UseCaseTest {
     public static void main(String[] args) {
-        String path = "C:\\Users\\mgold\\OneDrive\\Documents\\code_Projects\\Tre-app-tracker";
+        String path = args[0]; // Get the path from command line arguments
 
         // Create in-memory repository
         LogRepository repository = new CsvLogRepositoryImpl(path + "\\logs.csv");

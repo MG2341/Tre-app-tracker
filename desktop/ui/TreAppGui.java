@@ -13,12 +13,13 @@ import core.application.SessionService;
 import core.SessionAttribute;
 
 public class TreAppGui extends JFrame {
+    private static final int DEFAULT_VALUE = 0; // Assuming a default value for attributes
     private SessionService sessionService;
+    private Set<SessionAttribute> selectedAttributes;
 
     private JTextField durationField;
     private JTextArea notesArea;
     private JButton saveSessionButton;
-    private Set<AttributeType> selectedAttributes;
 
     public TreAppGui(SessionService sessionService) {
         this.sessionService = sessionService;
@@ -96,12 +97,13 @@ public class TreAppGui extends JFrame {
     }
 
     private void toggleAttribute(AttributeType attr, JButton button) {
-        if (selectedAttributes.contains(attr)) {
-            selectedAttributes.remove(attr);
+        SessionAttribute sessionAttr = new SessionAttribute(attr, DEFAULT_VALUE); 
+        if (selectedAttributes.contains(sessionAttr)) {
+            selectedAttributes.remove(sessionAttr);
             button.setBackground(null);
             button.setOpaque(false);
         } else {
-            selectedAttributes.add(attr);
+            selectedAttributes.add(sessionAttr);
             button.setBackground(new Color(173, 216, 230));
             button.setOpaque(true);
         }
@@ -120,7 +122,7 @@ public class TreAppGui extends JFrame {
             String notes = notesArea.getText();
 
             // Create SessionLog with selected attributes
-            ArrayList<AttributeType> attributes = new ArrayList<>(selectedAttributes);
+            ArrayList<SessionAttribute> attributes = new ArrayList<>(selectedAttributes);
             SessionLog log = new SessionLog(LocalDate.now(), duration, attributes, notes);
 
             // Execute use case

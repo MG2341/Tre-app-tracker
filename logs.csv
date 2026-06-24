@@ -1,13 +1,14 @@
 Date,DurationMinutes,StartTime,EndTime,Attributes,Notes
-2026-06-23,80,,,Mood:40,"fine"
-2026-06-23,34,,,Mood:23,"fine
+23/06/2026,80,,,Mood:40,fine
+23/06/2026,34,,,Mood:23,"fine
 "
-2026-06-23,1,,,Mood:1,"1"
-2026-06-23,23,,,Mood:23,"fine
+23/06/2026,1,,,Mood:1,1
+23/06/2026,23,,,Mood:23,"fine
 "
-2026-06-23,1,,,Mood:1,"ok
+23/06/2026,1,,,Mood:1,"ok
 "
-2026-06-23,1,,,Fascia Release:5;Temperature Change (Sweats/Chills):2;Emotional Release:3,
-2026-06-24,40,,,Fascia Release:5;Emotional Release:3,"	qw
+23/06/2026,1,,,Fascia Release:5;Temperature Change (Sweats/Chills):2;Emotional Release:3,
+24/06/2026,40,,,Fascia Release:5;Emotional Release:3,"	qw
 "
-2026-06-24,69,,,Fascia Release:5,
+24/06/2026,69,,,Fascia Release:5,
+25/06/2026,56,,,Fascia Release:0;Temperature Change (Sweats/Chills):0;Memories Surfaced:0,deez nuts

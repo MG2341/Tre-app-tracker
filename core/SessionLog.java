@@ -26,7 +26,8 @@ public class SessionLog {
     }
 
     // CONSTRUCTOR 2: For the "Timer" option
-    public SessionLog(LocalDate date, LocalTime startTime, LocalTime endTime, int durationMinutes, ArrayList<SessionAttribute> attributes, String notes) {
+    public SessionLog(LocalDate date, LocalTime startTime, LocalTime endTime, int durationMinutes, ArrayList<SessionAttribute
+        > attributes, String notes) {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
@@ -57,4 +58,16 @@ public class SessionLog {
     public ArrayList<SessionAttribute> getAttributes() {
         return attributes;
     }
+    public void addAttribute(SessionAttribute attribute) {
+        if (this.attributes == null) {
+            this.attributes = new ArrayList<>();
+        }
+        this.attributes.add(attribute);
+    }
+    public void removeAttribute(SessionAttribute attribute) {
+        if (this.attributes != null) {
+            this.attributes.remove(attribute);
+        }
+    }
+    
 }

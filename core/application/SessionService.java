@@ -1,6 +1,7 @@
 package core.application;
 
 import core.SessionLog;
+import core.SessionAttribute;
 
 public class SessionService {
     private LogRepository repository;
@@ -17,6 +18,18 @@ public class SessionService {
     public void deleteSession(String id) {
         // Deletion rules here...
         repository.deleteLogById(id);
+    }
+
+    public void addAttributeToSession(SessionLog log, SessionAttribute attribute) {
+        log.addAttribute(attribute);
+        repository.deleteLogById(log.getId()); // Remove the old log
+        repository.saveLog(log);
+    }
+
+    public void removeAttributeFromSession(SessionLog log, SessionAttribute attribute) {
+        log.removeAttribute(attribute);
+        repository.deleteLogById(log.getId()); // Remove the old log
+        repository.saveLog(log);
     }
 
     private void validateSession(SessionLog log) {

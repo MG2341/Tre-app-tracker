@@ -4,10 +4,10 @@ import java.util.UUID;
 
 public class SessionAttribute {
     private AttributeType attributeType;
-    private String value;
+    private int value;
     private UUID id;
 
-    public SessionAttribute(AttributeType attributeType, String value) {
+    public SessionAttribute(AttributeType attributeType, int value) {
         this.attributeType = attributeType;
         this.value = value;
         this.id = UUID.randomUUID(); // Generate a unique ID for each attribute
@@ -17,7 +17,7 @@ public class SessionAttribute {
         return attributeType;
     }
 
-    public String getValue() {
+    public int getValue() {
         return value;
     }
 
