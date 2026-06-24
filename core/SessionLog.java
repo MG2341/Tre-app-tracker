@@ -10,9 +10,9 @@ public class SessionLog {
     private int durationMinutes; // ALWAYS required
     private LocalTime startTime; // Might be null
     private LocalTime endTime;   // Might be null
-    private ArrayList<SessionAttribute> attributes;
     private String notes;
     private String id;
+    private ArrayList<SessionAttribute> attributes; // List of attributes for this session
 
     // CONSTRUCTOR 1: For the "Manual Input" option
     public SessionLog(LocalDate date, int durationMinutes, ArrayList<SessionAttribute> attributes, String notes) {
@@ -20,7 +20,7 @@ public class SessionLog {
         this.durationMinutes = durationMinutes;
         this.startTime = null; // We don't know when they did it
         this.endTime = null;   // We don't know when they finished
-        this.attributes = attributes;
+        this.attributes = attributes; // Initialize attributes with the provided list
         this.notes = notes;
         this.id = UUID.randomUUID().toString(); // Generate a unique ID
     }
@@ -42,9 +42,6 @@ public class SessionLog {
     public int getDurationMinutes() {
         return durationMinutes;
     }
-    public ArrayList<SessionAttribute> getAttributes() {
-        return attributes;
-    }
     public String getNotes() {
         return notes;
     }
@@ -56,5 +53,8 @@ public class SessionLog {
     }
     public String getId() {
         return id;
+    }
+    public ArrayList<SessionAttribute> getAttributes() {
+        return attributes;
     }
 }

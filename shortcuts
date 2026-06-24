@@ -1,0 +1,7 @@
+cd "C:\Users\mgold\OneDrive\Documents\code_Projects\Tre-app-tracker"
+
+dir /s /b *.java > sources.txt
+
+javac @sources.txt
+
+java desktop.test.UseCaseTest.java
