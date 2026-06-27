@@ -6,3 +6,5 @@ C:\Users\Matan\Documents\Code\Tre-app-tracker\core\application\SessionService.ja
 C:\Users\Matan\Documents\Code\Tre-app-tracker\desktop\infrastructure\CsvLogRepositoryImpl.java
 C:\Users\Matan\Documents\Code\Tre-app-tracker\desktop\test\UseCaseTest.java
 C:\Users\Matan\Documents\Code\Tre-app-tracker\desktop\ui\TreAppGui.java
+C:\Users\Matan\Documents\Code\Tre-app-tracker\desktop\ui\session\SessionEntryPanel.java
+C:\Users\Matan\Documents\Code\Tre-app-tracker\desktop\ui\session\SessionTimerPanel.java

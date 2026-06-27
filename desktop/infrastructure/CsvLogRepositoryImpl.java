@@ -81,6 +81,28 @@ public class CsvLogRepositoryImpl implements LogRepository {
     }
 
     @Override
+    public List<SessionLog> getLogsByDateRange(LocalDate startDate, LocalDate endDate) {
+        List<SessionLog> logs = new ArrayList<>();
+        try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
+            String line;
+            boolean isHeader = true;
+            while ((line = reader.readLine()) != null) {
+                if (isHeader) {
+                    isHeader = false;
+                    continue;
+                }
+                SessionLog log = csvLineToLog(line);
+                if (log != null && !log.getDate().isBefore(startDate) && !log.getDate().isAfter(endDate)) {
+                    logs.add(log);
+                }
+            }
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to read logs from CSV: " + filePath, e);
+        }
+        return logs;
+    }
+
+    @Override
     public List<SessionLog> getAllLogs() {
         List<SessionLog> logs = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new FileReader(filePath))) {
