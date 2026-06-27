@@ -1,2 +1,3 @@
-* when using timer the start and end times are weirdly saved
-* 
+several bugs -
+* the time is being save in a weird format. fix that.
+* I want the the date has a ' char at the start of the date on the csv form

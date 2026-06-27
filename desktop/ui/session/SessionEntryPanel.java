@@ -20,8 +20,8 @@ public class SessionEntryPanel extends JPanel {
     private final SessionService sessionService;
     private final Map<AttributeType, SessionAttribute> selectedAttributes = new LinkedHashMap<>();
     private final Map<AttributeType, JButton> attributeButtons = new LinkedHashMap<>();
-    private final JRadioButton manualModeButton = new JRadioButton("Manual", true);
-    private final JRadioButton timerModeButton = new JRadioButton("Timer");
+    private final JRadioButton manualModeButton = new JRadioButton("Manual");
+    private final JRadioButton timerModeButton = new JRadioButton("Timer", true);
     private final JTextField durationField = new JTextField(10);
     private final JTextField dateField = new JTextField(10);
     private final JTextArea notesArea = new JTextArea(4, 20);
@@ -145,9 +145,9 @@ public class SessionEntryPanel extends JPanel {
     }
 
     private void updateModeVisibility() {
-        boolean manualModeSelected = manualModeButton.isSelected();
-        manualStartTimePanel.setVisible(manualModeSelected);
-        sessionTimerPanel.setVisible(!manualModeSelected);
+        boolean timerModeSelected = timerModeButton.isSelected();
+        manualStartTimePanel.setVisible(!timerModeSelected);
+        sessionTimerPanel.setVisible(timerModeSelected);
         revalidate();
         repaint();
     }
@@ -267,7 +267,7 @@ public class SessionEntryPanel extends JPanel {
         resetAttributeButtons();
         addStartTimeCheckBox.setSelected(false);
         startTimeSpinner.setValue(new Date());
-        manualModeButton.setSelected(true);
+        timerModeButton.setSelected(true);
         sessionTimerPanel.resetTimer();
         updateManualStartTimeControls();
         updateModeVisibility();
