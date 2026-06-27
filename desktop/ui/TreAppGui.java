@@ -4,6 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import core.application.SessionService;
 import desktop.ui.session.SessionEntryPanel;
+import desktop.ui.history.HistoryPanel;
 
 /**
  * Main application window using CardLayout to manage multiple screens.
@@ -19,12 +20,14 @@ public class TreAppGui extends JFrame {
     private final CardLayout cardLayout;
     private final JPanel cardPanel;
     private final SessionEntryPanel sessionEntryPanel;
+    private final HistoryPanel historyPanel;
 
     public TreAppGui(SessionService sessionService) {
         this.sessionService = sessionService;
         this.cardLayout = new CardLayout();
         this.cardPanel = new JPanel(cardLayout);
         this.sessionEntryPanel = new SessionEntryPanel(sessionService);
+        this.historyPanel = new HistoryPanel(sessionService);
 
         setupFrame();
         setupCardPanel();
@@ -42,7 +45,7 @@ public class TreAppGui extends JFrame {
 
     private void setupCardPanel() {
         cardPanel.add(sessionEntryPanel, ADD_SESSION_CARD);
-        cardPanel.add(createHistoryPanel(), HISTORY_CARD);
+        cardPanel.add(historyPanel, HISTORY_CARD);
     }
 
     private void setupLayout() {
@@ -73,18 +76,6 @@ public class TreAppGui extends JFrame {
         sidebar.add(Box.createVerticalGlue());
 
         return sidebar;
-    }
-
-    private JPanel createHistoryPanel() {
-        JPanel historyPanel = new JPanel(new BorderLayout());
-        historyPanel.setBorder(BorderFactory.createEmptyBorder(15, 15, 15, 15));
-
-        JLabel placeholderLabel = new JLabel("History Screen");
-        placeholderLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        placeholderLabel.setFont(new Font("Arial", Font.PLAIN, 24));
-
-        historyPanel.add(placeholderLabel, BorderLayout.CENTER);
-        return historyPanel;
     }
 
     private void switchToAddSession() {
