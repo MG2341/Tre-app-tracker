@@ -9,6 +9,7 @@ import core.AttributeType;
 import java.io.*;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeParseException;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,8 +18,10 @@ public class CsvLogRepositoryImpl implements LogRepository {
     private static final String CSV_HEADER = "Date,DurationMinutes,StartTime,EndTime,Attributes,Notes";
     private static final String ATTRIBUTE_DELIMITER = ";";
     private static final String ATTRIBUTE_PAIR_DELIMITER = ":";
+    private static final String TEXT_DATE_PREFIX = "'";
     private final String filePath;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
+    private final DateTimeFormatter legacyDateFormatter = DateTimeFormatter.ofPattern("d/M/uuuu");
     private final DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME;
 
     public CsvLogRepositoryImpl(String filePath) {
@@ -131,7 +134,7 @@ public class CsvLogRepositoryImpl implements LogRepository {
         StringBuilder sb = new StringBuilder();
         
         // Date
-        sb.append(log.getDate().format(dateFormatter));
+        sb.append(TEXT_DATE_PREFIX).append(log.getDate().format(dateFormatter));
         sb.append(",");
         
         // Duration minutes
@@ -173,7 +176,7 @@ public class CsvLogRepositoryImpl implements LogRepository {
                 return null;
             }
             
-            LocalDate date = LocalDate.parse(parts[0].trim(), dateFormatter);
+            LocalDate date = parseDate(parts[0].trim());
             int durationMinutes = Integer.parseInt(parts[1].trim());
             LocalTime startTime = parts[2].trim().isEmpty() ? null : LocalTime.parse(parts[2].trim(), timeFormatter);
             LocalTime endTime = parts[3].trim().isEmpty() ? null : LocalTime.parse(parts[3].trim(), timeFormatter);
@@ -187,6 +190,19 @@ public class CsvLogRepositoryImpl implements LogRepository {
         } catch (Exception e) {
             System.err.println("Failed to parse CSV line: " + line + " - " + e.getMessage());
             return null;
+        }
+    }
+
+    private LocalDate parseDate(String rawDate) {
+        String dateValue = rawDate.trim();
+        if (dateValue.startsWith(TEXT_DATE_PREFIX)) {
+            dateValue = dateValue.substring(1);
+        }
+
+        try {
+            return LocalDate.parse(dateValue, dateFormatter);
+        } catch (DateTimeParseException ex) {
+            return LocalDate.parse(dateValue, legacyDateFormatter);
         }
     }
 
