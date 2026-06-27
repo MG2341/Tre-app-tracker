@@ -23,6 +23,7 @@ public class SessionEntryPanel extends JPanel {
     private final JRadioButton manualModeButton = new JRadioButton("Manual", true);
     private final JRadioButton timerModeButton = new JRadioButton("Timer");
     private final JTextField durationField = new JTextField(10);
+    private final JTextField dateField = new JTextField(10);
     private final JTextArea notesArea = new JTextArea(4, 20);
     private final JCheckBox addStartTimeCheckBox = new JCheckBox("Add start time");
     private final JSpinner startTimeSpinner = createStartTimeSpinner();
@@ -54,10 +55,9 @@ public class SessionEntryPanel extends JPanel {
     private JPanel createDatePanel() {
         JPanel datePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         datePanel.add(new JLabel("Date:"));
-
-        JTextField dateField = new JTextField(LocalDate.now().toString(), 10);
-        dateField.setEditable(false);
         datePanel.add(dateField);
+        dateField.setText(LocalDate.now().toString());
+        dateField.setEditable(true);
 
         return datePanel;
     }
@@ -212,6 +212,7 @@ public class SessionEntryPanel extends JPanel {
 
     private SessionLog createSessionLog() {
         int duration = parseDuration();
+        LocalDate date = parseDate();
         String notes = notesArea.getText();
         ArrayList<SessionAttribute> attributes = new ArrayList<>(selectedAttributes.values());
 
@@ -222,15 +223,15 @@ public class SessionEntryPanel extends JPanel {
             }
 
             int configuredDuration = sessionTimerPanel.getConfiguredDurationMinutes();
-            return new SessionLog(LocalDate.now(), timerStartTime, timerStartTime.plusMinutes(configuredDuration), configuredDuration, attributes, notes);
+            return new SessionLog(date, timerStartTime, timerStartTime.plusMinutes(configuredDuration), configuredDuration, attributes, notes);
         }
 
         if (addStartTimeCheckBox.isSelected()) {
             LocalTime startTime = parseManualStartTime();
-            return new SessionLog(LocalDate.now(), startTime, startTime.plusMinutes(duration), duration, attributes, notes);
+            return new SessionLog(date, startTime, startTime.plusMinutes(duration), duration, attributes, notes);
         }
 
-        return new SessionLog(LocalDate.now(), duration, attributes, notes);
+        return new SessionLog(date, duration, attributes, notes);
     }
 
     private int parseDuration() {
@@ -248,6 +249,15 @@ public class SessionEntryPanel extends JPanel {
 
         Date selectedDate = (Date) startTimeSpinner.getValue();
         return LocalDateTime.ofInstant(selectedDate.toInstant(), ZoneId.systemDefault()).toLocalTime();
+    }
+
+    private LocalDate parseDate() {
+        String dateText = dateField.getText().trim();
+        if (dateText.isEmpty()) {
+            throw new IllegalArgumentException("Please enter a date.");
+        }
+
+        return LocalDate.parse(dateText);
     }
 
     private void clearForm() {
