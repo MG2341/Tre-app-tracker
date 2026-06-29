@@ -22,7 +22,7 @@ public class CsvLogRepositoryImpl implements LogRepository {
     private final String filePath;
     private final DateTimeFormatter dateFormatter = DateTimeFormatter.ISO_LOCAL_DATE;
     private final DateTimeFormatter legacyDateFormatter = DateTimeFormatter.ofPattern("d/M/uuuu");
-    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ISO_LOCAL_TIME;
+    private final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
 
     public CsvLogRepositoryImpl(String filePath) {
         this.filePath = filePath;
@@ -178,8 +178,8 @@ public class CsvLogRepositoryImpl implements LogRepository {
             
             LocalDate date = parseDate(parts[0].trim());
             int durationMinutes = Integer.parseInt(parts[1].trim());
-            LocalTime startTime = parts[2].trim().isEmpty() ? null : LocalTime.parse(parts[2].trim(), timeFormatter);
-            LocalTime endTime = parts[3].trim().isEmpty() ? null : LocalTime.parse(parts[3].trim(), timeFormatter);
+            LocalTime startTime = parseTime(parts[2].trim());
+            LocalTime endTime = parseTime(parts[3].trim());
             ArrayList<SessionAttribute> attributes = stringToAttributes(parts[4].trim());
             String notes = parts[5].trim();
             if (notes.startsWith("\"") && notes.endsWith("\"")) {
@@ -204,6 +204,41 @@ public class CsvLogRepositoryImpl implements LogRepository {
         } catch (DateTimeParseException ex) {
             return LocalDate.parse(dateValue, legacyDateFormatter);
         }
+    }
+
+    private LocalTime parseTime(String rawTime) {
+        String timeValue = rawTime.trim();
+        if (timeValue.isEmpty()) {
+            return null;
+        }
+
+        try {
+            return LocalTime.parse(timeValue, timeFormatter);
+        } catch (DateTimeParseException ex) {
+            try {
+                return LocalTime.parse(timeValue, DateTimeFormatter.ISO_LOCAL_TIME);
+            } catch (DateTimeParseException ignored) {
+                return parseLegacyMinuteSecondTime(timeValue);
+            }
+        }
+    }
+
+    private LocalTime parseLegacyMinuteSecondTime(String timeValue) {
+        String[] parts = timeValue.split(":", 2);
+        if (parts.length != 2) {
+            throw new DateTimeParseException("Unrecognized time format", timeValue, 0);
+        }
+
+        int minutes = Integer.parseInt(parts[0]);
+        double secondsValue = Double.parseDouble(parts[1]);
+        int seconds = (int) secondsValue;
+        int nanos = (int) Math.round((secondsValue - seconds) * 1_000_000_000d);
+        if (nanos == 1_000_000_000) {
+            seconds += 1;
+            nanos = 0;
+        }
+
+        return LocalTime.of(0, minutes, seconds, nanos);
     }
 
     /**

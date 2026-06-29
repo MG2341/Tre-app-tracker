@@ -27,4 +27,7 @@ Date,DurationMinutes,StartTime,EndTime,Attributes,Notes
 '2026-06-27,34,,,,dfsdf
 '2026-06-27,45,,,,
 '2026-06-27,1,23:04.6,24:04.6,Emotional Release:0,okaish
-'2026-06-27,23,15:23:08.839,15:46:08.839,,
+'2026-06-27,23,23:08.8,46:08.8,,
+'2026-06-29,23,16:23,16:46,Emotional Release:0;Memories Surfaced:0,test1
+'2026-06-29,13,,,Fascia Release:0;Deep Relaxation:0,test2
+'2026-06-29,23,16:23,16:46,,test3
