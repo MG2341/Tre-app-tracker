@@ -1,33 +1,20 @@
-Date,DurationMinutes,StartTime,EndTime,Attributes,Notes
-23/06/2026,80,,,Mood:40,fine
-23/06/2026,34,,,Mood:23,"fine
-"
-23/06/2026,1,,,Mood:1,1
-23/06/2026,23,,,Mood:23,"fine
-"
-23/06/2026,1,,,Mood:1,"ok
-"
-23/06/2026,1,,,Fascia Release:5;Temperature Change (Sweats/Chills):2;Emotional Release:3,
-24/06/2026,40,,,Fascia Release:5;Emotional Release:3,"	qw
-"
-24/06/2026,69,,,Fascia Release:5,
-25/06/2026,56,,,Fascia Release:0;Temperature Change (Sweats/Chills):0;Memories Surfaced:0,deez nuts
-25/06/2026,30,,,Fascia Release:0;Temperature Change (Sweats/Chills):0;Emotional Release:0,mode
-26/06/2026,90,,,Temperature Change (Sweats/Chills):0,
-26/06/2026,65,,,Fascia Release:0,
-26/06/2026,90,,,Fascia Release:0;Deep Relaxation:0,
-26/06/2026,90,,,Memories Surfaced:0;Emotional Release:0,rtbeeach
-27/06/2026,89,,,Memories Surfaced:0;Emotional Release:0;Deep Relaxation:0,test
-27/06/2026,1,41:07.4,42:07.4,Emotional Release:0;Temperature Change (Sweats/Chills):0,chill session
-27/06/2026,5,10:41:00,10:46:00,Memories Surfaced:0;Emotional Release:0,ok
-27/06/2026,89,,,,cool
-27/06/2026,69,22:10.8,31:10.8,,good
-27/06/2026,23,,,,e
-27/06/2023,34,,,,we
-'2026-06-27,34,,,,dfsdf
-'2026-06-27,45,,,,
-'2026-06-27,1,23:04.6,24:04.6,Emotional Release:0,okaish
-'2026-06-27,23,23:08.8,46:08.8,,
-'2026-06-29,23,16:23,16:46,Emotional Release:0;Memories Surfaced:0,test1
-'2026-06-29,13,,,Fascia Release:0;Deep Relaxation:0,test2
-'2026-06-29,23,16:23,16:46,,test3
+Id,Date,DurationMinutes,StartTime,EndTime,Attributes,Notes
+e1255b6d-7091-47dc-9e91-0167d2522d62,'2026-06-24,40,,,Fascia Release:5;Emotional Release:3,"qw"
+ceb402eb-36ef-4f07-9e3d-34bd3bf559c7,'2026-06-24,69,,,Fascia Release:5,
+9ce9bafa-11c3-4b13-bf8b-c875a6b26ef5,'2026-06-26,65,,,Fascia Release:0,
+a3dfd1de-6ea2-45cc-abde-eb14fe64bd85,'2026-06-26,90,,,Fascia Release:0;Deep Relaxation:0,
+61fb0c5d-c521-46b1-b064-06e3762e3935,'2026-06-26,90,,,Memories Surfaced:0;Emotional Release:0,"rtbeeach"
+5c8d65f1-fa9f-4c98-a84a-03e7bf399a47,'2026-06-27,89,,,Memories Surfaced:0;Emotional Release:0;Deep Relaxation:0,"test"
+04a819a4-9a71-4aa0-bd0f-f7af62a2cba2,'2026-06-27,5,10:41,10:46,Memories Surfaced:0;Emotional Release:0,"ok"
+3074a0d8-62f7-4a5c-b329-450185aeb97d,'2026-06-27,89,,,,"cool"
+a3e92aa5-a83c-4f12-9832-e1815eb7ad60,'2026-06-27,69,00:22,00:31,,"good"
+dba76355-910b-4772-9134-6cc0cf06e083,'2026-06-27,23,,,,"e"
+d3c0d723-b55f-448a-8b32-758dea7acfad,'2023-06-27,34,,,,"we"
+98c38ac1-0c85-41fc-bcc0-bf8df2279998,'2026-06-27,34,,,,"dfsdf"
+214833cf-ee9f-417b-ab0b-8de0e52586dd,'2026-06-27,45,,,,
+aeaefb72-a638-4ee7-9c03-595ab7686536,'2026-06-27,1,00:23,00:24,Emotional Release:0,"okaish"
+c5b60449-8d0f-474f-b658-3449278e56a5,'2026-06-27,23,00:23,00:46,,
+590e8549-4a78-46f0-9a27-71e4fa032fa0,'2026-06-29,23,16:23,16:46,Emotional Release:0;Memories Surfaced:0,"test1"
+fe7f54dd-192f-49e7-966b-007b4ea6a930,'2026-06-29,13,,,Fascia Release:0;Deep Relaxation:0,"test2"
+81664673-4142-4ec1-ba3b-1036fae0e9cc,'2026-06-29,23,16:23,16:46,,"test3"
+249947b9-6a39-4f97-8f66-a349379efa50,'2026-06-30,4,17:35,18:18,Fascia Release:0;Emotional Release:0;Memories Surfaced:0,"hi"

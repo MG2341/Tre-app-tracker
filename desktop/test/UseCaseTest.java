@@ -1,9 +1,5 @@
 package desktop.test;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import core.SessionLog;
 import core.application.LogRepository;
 import core.application.SessionService;
 import desktop.infrastructure.CsvLogRepositoryImpl;

@@ -15,7 +15,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class CsvLogRepositoryImpl implements LogRepository {
-    private static final String CSV_HEADER = "Date,DurationMinutes,StartTime,EndTime,Attributes,Notes";
+    private static final String CSV_HEADER = "Id,Date,DurationMinutes,StartTime,EndTime,Attributes,Notes";
     private static final String ATTRIBUTE_DELIMITER = ";";
     private static final String ATTRIBUTE_PAIR_DELIMITER = ":";
     private static final String TEXT_DATE_PREFIX = "'";
@@ -52,19 +52,7 @@ public class CsvLogRepositoryImpl implements LogRepository {
         List<SessionLog> logs = getAllLogs();
         boolean removed = logs.removeIf(log -> log.getId().equals(id));
         if (removed) {
-            try (FileWriter writer = new FileWriter(filePath);
-                 BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
-                bufferedWriter.write(CSV_HEADER);
-                bufferedWriter.newLine();
-                for (SessionLog log : logs) {
-                    String csvLine = logToCsvLine(log);
-                    bufferedWriter.write(csvLine);
-                    bufferedWriter.newLine();
-                }
-                bufferedWriter.flush();
-            } catch (IOException e) {
-                throw new RuntimeException("Failed to update CSV after deletion: " + filePath, e);
-            }
+            writeAllLogs(logs);
         }
         return removed;
     }
@@ -81,6 +69,25 @@ public class CsvLogRepositoryImpl implements LogRepository {
         } catch (IOException e) {
             throw new RuntimeException("Failed to save log to CSV: " + filePath, e);
         }
+    }
+
+    @Override
+    public void updateLog(SessionLog log) {
+        List<SessionLog> logs = getAllLogs();
+        boolean updated = false;
+        for (int i = 0; i < logs.size(); i++) {
+            if (logs.get(i).getId().equals(log.getId())) {
+                logs.set(i, log);
+                updated = true;
+                break;
+            }
+        }
+
+        if (!updated) {
+            throw new IllegalArgumentException("No log found with id: " + log.getId());
+        }
+
+        writeAllLogs(logs);
     }
 
     @Override
@@ -132,6 +139,9 @@ public class CsvLogRepositoryImpl implements LogRepository {
      */
     private String logToCsvLine(SessionLog log) {
         StringBuilder sb = new StringBuilder();
+
+        sb.append(log.getId());
+        sb.append(",");
         
         // Date
         sb.append(TEXT_DATE_PREFIX).append(log.getDate().format(dateFormatter));
@@ -166,6 +176,21 @@ public class CsvLogRepositoryImpl implements LogRepository {
         return sb.toString();
     }
 
+    private void writeAllLogs(List<SessionLog> logs) {
+        try (FileWriter writer = new FileWriter(filePath);
+             BufferedWriter bufferedWriter = new BufferedWriter(writer)) {
+            bufferedWriter.write(CSV_HEADER);
+            bufferedWriter.newLine();
+            for (SessionLog log : logs) {
+                bufferedWriter.write(logToCsvLine(log));
+                bufferedWriter.newLine();
+            }
+            bufferedWriter.flush();
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to update CSV file: " + filePath, e);
+        }
+    }
+
     /**
      * Convert a CSV line to a SessionLog object
      */
@@ -175,18 +200,28 @@ public class CsvLogRepositoryImpl implements LogRepository {
             if (parts.length < 6) {
                 return null;
             }
-            
-            LocalDate date = parseDate(parts[0].trim());
-            int durationMinutes = Integer.parseInt(parts[1].trim());
-            LocalTime startTime = parseTime(parts[2].trim());
-            LocalTime endTime = parseTime(parts[3].trim());
-            ArrayList<SessionAttribute> attributes = stringToAttributes(parts[4].trim());
-            String notes = parts[5].trim();
+
+            String id;
+            int offset;
+            if (parts.length >= 7) {
+                id = parts[0].trim();
+                offset = 1;
+            } else {
+                id = java.util.UUID.randomUUID().toString();
+                offset = 0;
+            }
+
+            LocalDate date = parseDate(parts[0 + offset].trim());
+            int durationMinutes = Integer.parseInt(parts[1 + offset].trim());
+            LocalTime startTime = parseTime(parts[2 + offset].trim());
+            LocalTime endTime = parseTime(parts[3 + offset].trim());
+            ArrayList<SessionAttribute> attributes = stringToAttributes(parts[4 + offset].trim());
+            String notes = parts[5 + offset].trim();
             if (notes.startsWith("\"") && notes.endsWith("\"")) {
                 notes = notes.substring(1, notes.length() - 1).replace("\"\"", "\"");
             }
-            
-            return new SessionLog(date, startTime, endTime, durationMinutes, attributes, notes);
+
+            return new SessionLog(date, startTime, endTime, durationMinutes, attributes, notes, id);
         } catch (Exception e) {
             System.err.println("Failed to parse CSV line: " + line + " - " + e.getMessage());
             return null;

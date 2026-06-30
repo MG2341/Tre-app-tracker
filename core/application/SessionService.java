@@ -2,6 +2,7 @@ package core.application;
 
 import core.SessionLog;
 import core.SessionAttribute;
+import java.util.List;
 
 public class SessionService {
     private LogRepository repository;
@@ -13,6 +14,15 @@ public class SessionService {
     public void saveSession(SessionLog log) {
         validateSession(log);
         repository.saveLog(log);
+    }
+
+    public List<SessionLog> getAllSessions() {
+        return repository.getAllLogs();
+    }
+
+    public void updateSession(SessionLog log) {
+        validateSession(log);
+        repository.updateLog(log);
     }
 
     public void deleteSession(String id) {

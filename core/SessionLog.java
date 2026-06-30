@@ -16,25 +16,34 @@ public class SessionLog {
 
     // CONSTRUCTOR 1: For the "Manual Input" option
     public SessionLog(LocalDate date, int durationMinutes, ArrayList<SessionAttribute> attributes, String notes) {
+        this(date, durationMinutes, attributes, notes, UUID.randomUUID().toString());
+    }
+
+    public SessionLog(LocalDate date, int durationMinutes, ArrayList<SessionAttribute> attributes, String notes, String id) {
         this.date = date;
         this.durationMinutes = durationMinutes;
         this.startTime = null; // We don't know when they did it
         this.endTime = null;   // We don't know when they finished
         this.attributes = attributes; // Initialize attributes with the provided list
         this.notes = notes;
-        this.id = UUID.randomUUID().toString(); // Generate a unique ID
+        this.id = id; // Persisted identifier when available
     }
 
     // CONSTRUCTOR 2: For the "Timer" option
     public SessionLog(LocalDate date, LocalTime startTime, LocalTime endTime, int durationMinutes, ArrayList<SessionAttribute
         > attributes, String notes) {
+        this(date, startTime, endTime, durationMinutes, attributes, notes, UUID.randomUUID().toString());
+    }
+
+    public SessionLog(LocalDate date, LocalTime startTime, LocalTime endTime, int durationMinutes, ArrayList<SessionAttribute
+        > attributes, String notes, String id) {
         this.date = date;
         this.startTime = startTime;
         this.endTime = endTime;
         this.durationMinutes = durationMinutes;
         this.attributes = attributes;
         this.notes = notes;
-        this.id = UUID.randomUUID().toString(); // Generate a unique ID
+        this.id = id; // Persisted identifier when available
     }
 
     public LocalDate getDate() {
@@ -54,6 +63,9 @@ public class SessionLog {
     }
     public String getId() {
         return id;
+    }
+    public void setId(String id) {
+        this.id = id;
     }
     public ArrayList<SessionAttribute> getAttributes() {
         return attributes;
