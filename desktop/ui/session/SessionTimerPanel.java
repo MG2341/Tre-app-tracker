@@ -16,7 +16,11 @@ public class SessionTimerPanel extends JPanel {
     private final JButton resetButton;
     private Timer swingTimer;
     private LocalDateTime timerStartDateTime;
+    private LocalDateTime activeSegmentStartDateTime;
+    private LocalDateTime timerEndDateTime;
     private int configuredDurationMinutes;
+    private long accumulatedActiveSeconds;
+    private boolean timerComplete;
 
     public SessionTimerPanel(IntSupplier durationSupplier, Runnable onTimerStarted, Runnable onTimerStopped) {
         this.durationSupplier = durationSupplier;
@@ -30,7 +34,7 @@ public class SessionTimerPanel extends JPanel {
         startButton = new JButton("Start");
         resetButton = new JButton("Reset");
 
-        startButton.addActionListener(e -> startTimer());
+        startButton.addActionListener(e -> toggleTimer());
         resetButton.addActionListener(e -> resetTimer());
         resetButton.setEnabled(false);
 
@@ -47,13 +51,34 @@ public class SessionTimerPanel extends JPanel {
         return timerStartDateTime == null ? null : timerStartDateTime.toLocalTime();
     }
 
+    public LocalTime getEndTime() {
+        if (timerEndDateTime != null) {
+            return timerEndDateTime.toLocalTime();
+        }
+
+        if (activeSegmentStartDateTime != null) {
+            return LocalDateTime.now().toLocalTime();
+        }
+
+        return null;
+    }
+
     public int getConfiguredDurationMinutes() {
         return configuredDurationMinutes;
     }
 
+    public int getElapsedDurationMinutes() {
+        long totalSeconds = getTotalActiveSeconds();
+        if (totalSeconds <= 0) {
+            return 0;
+        }
+
+        return (int) ((totalSeconds + 59L) / 60L);
+    }
+
     public void resetTimer() {
         stopSwingTimer();
-        timerStartDateTime = null;
+        clearTimerState();
         configuredDurationMinutes = 0;
         timerStatusLabel.setText("Timer not started");
         startButton.setEnabled(true);
@@ -61,33 +86,75 @@ public class SessionTimerPanel extends JPanel {
         onTimerStopped.run();
     }
 
+    private void clearTimerState() {
+        timerStartDateTime = null;
+        activeSegmentStartDateTime = null;
+        timerEndDateTime = null;
+        accumulatedActiveSeconds = 0L;
+        timerComplete = false;
+        startButton.setText("Start");
+    }
+
+    private void toggleTimer() {
+        if (isRunning()) {
+            stopTimer();
+        } else {
+            startTimer();
+        }
+    }
+
     private void startTimer() {
         if (isRunning()) {
             return;
         }
 
-        int durationMinutes;
-        try {
-            durationMinutes = durationSupplier.getAsInt();
-        } catch (RuntimeException ex) {
-            JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        if (timerComplete) {
+            clearTimerState();
         }
 
-        if (durationMinutes <= 0) {
-            JOptionPane.showMessageDialog(this, "Duration must be greater than 0 minutes.", "Error", JOptionPane.ERROR_MESSAGE);
-            return;
+        if (timerStartDateTime == null) {
+            int durationMinutes;
+            try {
+                durationMinutes = durationSupplier.getAsInt();
+            } catch (RuntimeException ex) {
+                JOptionPane.showMessageDialog(this, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            if (durationMinutes <= 0) {
+                JOptionPane.showMessageDialog(this, "Duration must be greater than 0 minutes.", "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            configuredDurationMinutes = durationMinutes;
+            timerStartDateTime = LocalDateTime.now();
         }
 
-        configuredDurationMinutes = durationMinutes;
-        timerStartDateTime = LocalDateTime.now();
+        activeSegmentStartDateTime = LocalDateTime.now();
+        timerEndDateTime = null;
+        timerComplete = false;
         onTimerStarted.run();
 
-        startButton.setEnabled(false);
+        startButton.setText("Stop");
+        startButton.setEnabled(true);
         resetButton.setEnabled(true);
 
         swingTimer = new Timer(1000, e -> updateTimerStatus());
         swingTimer.start();
+        updateTimerStatus();
+    }
+
+    private void stopTimer() {
+        if (!isRunning()) {
+            return;
+        }
+
+        accumulateCurrentSegment();
+        activeSegmentStartDateTime = null;
+        timerEndDateTime = LocalDateTime.now();
+        stopSwingTimer();
+        startButton.setText("Continue");
+        onTimerStopped.run();
         updateTimerStatus();
     }
 
@@ -98,19 +165,50 @@ public class SessionTimerPanel extends JPanel {
         }
 
         long totalSeconds = configuredDurationMinutes * 60L;
-        long elapsedSeconds = Duration.between(timerStartDateTime, LocalDateTime.now()).getSeconds();
+        long elapsedSeconds = getTotalActiveSeconds();
         long remainingSeconds = Math.max(0, totalSeconds - elapsedSeconds);
 
         if (remainingSeconds == 0) {
             timerStatusLabel.setText("Timer complete");
+            timerComplete = true;
+            accumulatedActiveSeconds = totalSeconds;
+            activeSegmentStartDateTime = null;
+            timerEndDateTime = LocalDateTime.now();
             stopSwingTimer();
+            startButton.setText("Start");
             startButton.setEnabled(true);
             resetButton.setEnabled(true);
             onTimerStopped.run();
             return;
         }
 
-        timerStatusLabel.setText("Remaining: " + formatSeconds(remainingSeconds));
+        if (isRunning()) {
+            timerStatusLabel.setText("Remaining: " + formatSeconds(remainingSeconds));
+        } else {
+            timerStatusLabel.setText("Paused: " + formatSeconds(remainingSeconds));
+        }
+    }
+
+    private void accumulateCurrentSegment() {
+        if (activeSegmentStartDateTime == null) {
+            return;
+        }
+
+        accumulatedActiveSeconds += Duration.between(activeSegmentStartDateTime, LocalDateTime.now()).getSeconds();
+    }
+
+    private long getTotalActiveSeconds() {
+        long totalSeconds = accumulatedActiveSeconds;
+
+        if (activeSegmentStartDateTime != null) {
+            totalSeconds += Duration.between(activeSegmentStartDateTime, LocalDateTime.now()).getSeconds();
+        }
+
+        if (configuredDurationMinutes > 0) {
+            totalSeconds = Math.min(totalSeconds, configuredDurationMinutes * 60L);
+        }
+
+        return Math.max(0L, totalSeconds);
     }
 
     private void stopSwingTimer() {

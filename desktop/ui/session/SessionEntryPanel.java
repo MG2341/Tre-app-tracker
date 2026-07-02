@@ -222,8 +222,9 @@ public class SessionEntryPanel extends JPanel {
                 throw new IllegalArgumentException("Press Start before saving a timer session.");
             }
 
-            int configuredDuration = sessionTimerPanel.getConfiguredDurationMinutes();
-            return new SessionLog(date, timerStartTime, timerStartTime.plusMinutes(configuredDuration), configuredDuration, attributes, notes);
+            LocalTime timerEndTime = sessionTimerPanel.getEndTime();
+            int elapsedDuration = sessionTimerPanel.getElapsedDurationMinutes();
+            return new SessionLog(date, timerStartTime, timerEndTime, elapsedDuration, attributes, notes);
         }
 
         if (addStartTimeCheckBox.isSelected()) {

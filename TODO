@@ -1,3 +1,3 @@
 several bugs -
-* the time is being save in a weird format. fix that.
-* I want the the date has a ' char at the start of the date on the csv form
+* when I add a new session it doesn't show in history, only after I reopen the program
+* Should take into account seconds, not just whole minutes
