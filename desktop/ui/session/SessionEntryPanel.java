@@ -18,6 +18,7 @@ import core.application.SessionService;
 
 public class SessionEntryPanel extends JPanel {
     private final SessionService sessionService;
+    private final Runnable onSessionSaved;
     private final Map<AttributeType, SessionAttribute> selectedAttributes = new LinkedHashMap<>();
     private final Map<AttributeType, JButton> attributeButtons = new LinkedHashMap<>();
     private final JRadioButton manualModeButton = new JRadioButton("Manual");
@@ -30,8 +31,9 @@ public class SessionEntryPanel extends JPanel {
     private final SessionTimerPanel sessionTimerPanel;
     private final JPanel manualStartTimePanel;
 
-    public SessionEntryPanel(SessionService sessionService) {
+    public SessionEntryPanel(SessionService sessionService, Runnable onSessionSaved) {
         this.sessionService = sessionService;
+        this.onSessionSaved = onSessionSaved;
         this.sessionTimerPanel = new SessionTimerPanel(this::parseDuration, this::onTimerStarted, this::onTimerStopped);
         this.manualStartTimePanel = createManualStartTimePanel();
 
@@ -199,6 +201,9 @@ public class SessionEntryPanel extends JPanel {
         try {
             SessionLog log = createSessionLog();
             sessionService.saveSession(log);
+            if (onSessionSaved != null) {
+                onSessionSaved.run();
+            }
             JOptionPane.showMessageDialog(this, "Session saved successfully!", "Success", JOptionPane.INFORMATION_MESSAGE);
             clearForm();
         } catch (NumberFormatException ex) {

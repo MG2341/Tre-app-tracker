@@ -26,8 +26,8 @@ public class TreAppGui extends JFrame {
         this.sessionService = sessionService;
         this.cardLayout = new CardLayout();
         this.cardPanel = new JPanel(cardLayout);
-        this.sessionEntryPanel = new SessionEntryPanel(sessionService);
         this.historyPanel = new HistoryPanel(sessionService);
+        this.sessionEntryPanel = new SessionEntryPanel(sessionService, historyPanel::refreshData);
 
         setupFrame();
         setupCardPanel();

@@ -336,13 +336,26 @@ public class CsvLogRepositoryImpl implements LogRepository {
         
         String[] pairs = attributeString.split(ATTRIBUTE_DELIMITER);
         for (String pair : pairs) {
-            String[] parts = pair.split(ATTRIBUTE_PAIR_DELIMITER);
+            String[] parts = pair.split(ATTRIBUTE_PAIR_DELIMITER, 2);
             if (parts.length == 2) {
                 String name = parts[0].trim();
                 int score = Integer.parseInt(parts[1].trim());
-                attributes.add(new SessionAttribute(AttributeType.valueOf(name.toUpperCase().replace(" ", "_")), score)); // Assuming the enum names match the attribute names
+                attributes.add(new SessionAttribute(resolveAttributeType(name), score));
             }
         }
         return attributes;
+    }
+
+    private AttributeType resolveAttributeType(String rawName) {
+        String normalizedName = rawName.trim();
+
+        for (AttributeType attributeType : AttributeType.values()) {
+            if (attributeType.getName().equalsIgnoreCase(normalizedName) || attributeType.name().equalsIgnoreCase(normalizedName)) {
+                return attributeType;
+            }
+        }
+
+        String enumStyleName = normalizedName.toUpperCase().replaceAll("[^A-Z0-9]+", "_");
+        return AttributeType.valueOf(enumStyleName);
     }
 }

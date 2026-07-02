@@ -54,7 +54,7 @@ public class HistoryPanel extends JPanel {
         add(createSplitPane(), BorderLayout.CENTER);
         add(statusLabel, BorderLayout.SOUTH);
 
-        loadLogs();
+        refreshData();
     }
 
     private JSplitPane createSplitPane() {
@@ -142,7 +142,7 @@ public class HistoryPanel extends JPanel {
         panel.add(field, constraints);
     }
 
-    private void loadLogs() {
+    public void refreshData() {
         sessionListModel.clear();
         List<SessionLog> logs = sessionService.getAllSessions();
         for (SessionLog log : logs) {
@@ -183,7 +183,7 @@ public class HistoryPanel extends JPanel {
         try {
             SessionLog updatedLog = createUpdatedLog();
             sessionService.updateSession(updatedLog);
-            loadLogs();
+            refreshData();
             selectLogById(updatedLog.getId());
             statusLabel.setText("Session updated successfully.");
         } catch (RuntimeException ex) {
